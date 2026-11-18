@@ -11,7 +11,7 @@ from machine import unique_id
 import binascii
 import os
 
-# PREENCHA AQUI (hotspot do celular em 2,4 GHz)
+# Usei a rede do celular pessoal
 WIFI_NOME = "RedmiNote8"
 WIFI_SENHA = "batata123"
 
@@ -24,10 +24,10 @@ MQTT_USUARIO = ""
 MQTT_SENHA = ""
 TOPICO_BASE = "eld050/carrinho01"  # Mesmo topico usado pelo HTML; exclusivo do grupo
 
-# Ajuste somente se uma roda girar no sentido errado.
+# AAjustar a inversão do motor caso algum gire errado (montagem invertida da elétrica)
 INVERTER_MOTOR_A = False
 INVERTER_MOTOR_B = False
-SERVO_INVERTIDO = True  # Transistor inversor do circuito da aula
+SERVO_INVERTIDO = True  # Transistor inversor do circuito da aula (feito igual da aula)
 CENTRO, DIREITA, ESQUERDA = 85, 40, 130
 POTENCIA = 1023  # 100% de PWM
 TEMPO_SEM_COMANDO = 800  # ms
@@ -36,7 +36,7 @@ led_wifi = Pin(2, Pin.OUT, value=0)
 led_vm = Pin(33, Pin.OUT, value=0)
 led_am = Pin(32, Pin.OUT, value=0)
 led_vd = Pin(25, Pin.OUT, value=0)
-adc = ADC(Pin(34))  # Mover o fio do divisor do GPIO13 para GPIO34
+adc = ADC(Pin(34))  
 adc.atten(ADC.ATTN_11DB)
 
 # ENA e ENB com jumpers. PWM nas entradas da ponte H.
@@ -116,7 +116,7 @@ def atualizar_bateria():
     soma = 0
     for i in range(8):
         soma += adc.read_uv()
-    # R1 = 100k entre bateria e ADC; R2 = 47k entre ADC e GND.
+    # R1 = 100k entre bateria e ADC; R2 = 47k entre ADC e GND. (resistores usados na elétrica)
     tensao = (soma / 8 / 1000000) * 147 / 47
     led_vm.value(1)
     led_am.value(tensao >= 4)

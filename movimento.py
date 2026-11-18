@@ -2,9 +2,8 @@ from machine import Pin, SoftI2C
 from time import ticks_ms, ticks_diff, sleep_ms
 from math import atan2, sqrt, sin, cos, pi
 
-# Montagem esperada: X aponta para frente, Y para esquerda, Z para cima.
-# Se a placa estiver girada, ajuste a permutacao e os sinais dos eixos.
-# Use uma transformacao que preserve um sistema de eixos destro.
+# Montagem esperada do giroscópio: X aponta para frente, Y para esquerda, Z para cima.
+#pode mudar o eixo aqui caso tenha algo errado na montagem do giroscópio, mas o correto é deixar como está.
 EIXOS = (0, 1, 2)
 SINAIS = (1, 1, 1)
 
