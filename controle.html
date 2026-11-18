@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#010a13">
+<title>Hextech — Controle do carrinho</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100svh;padding:24px 18px;background:radial-gradient(ellipse at 50% 35%,#123b4c 0%,#071a29 36%,#010a13 80%);color:#f0e6d2;font-family:Arial,sans-serif;text-align:center}body:before{content:"";position:fixed;inset:12px;border:1px solid #785a2855;pointer-events:none}.painel{max-width:390px;margin:auto;position:relative}.marca{font-size:10px;letter-spacing:4px;color:#c8aa6e;margin:8px 0 18px}.emblema{width:48px;height:48px;margin:0 auto 20px;border:2px solid #c8aa6e;transform:rotate(45deg);background:linear-gradient(135deg,#0ac8b955,#005a8222);box-shadow:0 0 25px #0ac8b922,inset 0 0 12px #0ac8b944;display:grid;place-items:center}.emblema span{transform:rotate(-45deg);color:#a9f8ee;font-size:26px}h1{font-family:Georgia,serif;font-size:34px;letter-spacing:5px;margin:0;color:#f0e6d2;font-weight:normal}.subtitulo{color:#c8aa6e;letter-spacing:3px;font-size:10px;text-transform:uppercase;margin:10px 0 22px}.linha{height:1px;background:linear-gradient(90deg,transparent,#c8aa6e,transparent);margin:0 20px 20px}.info{display:grid;grid-template-columns:1.3fr 1fr;border:1px solid #785a28;background:#010a13b8;text-align:left;padding:15px 16px;gap:12px}.info>div+div{border-left:1px solid #785a2866;padding-left:16px}.rotulo{display:block;font-size:9px;color:#a09b8c;letter-spacing:2px;margin-bottom:7px}.valor{font-size:13px;color:#5bd9cd}#bateria{font-size:19px;color:#f0e6d2;font-weight:normal}.dica{font-size:13px;line-height:1.7;color:#a09b8c;margin:20px 0 8px}.dica strong{color:#f0e6d2;font-weight:normal}.setas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative;margin:15px 0 22px;padding:8px}.setas:before{content:"";position:absolute;inset:30px;border:1px solid #0ac8b92b;border-radius:50%;pointer-events:none;box-shadow:0 0 0 14px #0ac8b908}button{position:relative;height:88px;border:1px solid #c8aa6e;background:linear-gradient(160deg,#173447,#091621);box-shadow:inset 0 0 0 3px #010a13,inset 0 0 18px #0ac8b915;color:#f0e6d2;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:2px}button .icone{font-size:34px;line-height:1}button .nome{font-size:8px;letter-spacing:1.4px;color:#c8aa6e}button:active,button.ativo{background:linear-gradient(135deg,#005a82,#087c81);border-color:#0ac8b9;box-shadow:inset 0 0 0 3px #010a13,0 0 22px #0ac8b94d;color:white}button:focus-visible{outline:2px solid #0ac8b9;outline-offset:4px}#parar{border-color:#bf796e;background:linear-gradient(160deg,#48252c,#1b101c)}#parar .icone{font-size:24px;color:#f7b7a7}#parar .nome{color:#f7b7a7}#frente{grid-column:2}#esquerda{grid-column:1}#re_esquerda{grid-column:1}#tras{grid-column:2}#re_direita{grid-column:3}.rodape{border-top:1px solid #785a2855;padding-top:17px;color:#a09b8c;font-size:11px;line-height:1.8}.selo{display:inline-block;color:#c8aa6e;font-size:10px;letter-spacing:2px;margin-bottom:5px}.credito{font-size:9px;color:#687887;margin-top:18px;letter-spacing:1px}@media(max-width:350px){body{padding:18px 12px}h1{font-size:29px}button{height:76px}.info{padding:12px}}
+.velocidade{padding:16px;border:1px solid #785a28;background:#010a13b8;margin:18px 0}.velocidade label{display:block;color:#c8aa6e;font-size:12px;letter-spacing:1px}.velocidade input{width:100%;height:40px;accent-color:#0ac8b9;touch-action:pan-y}.escala{display:flex;justify-content:space-between;color:#a09b8c;font-size:11px}
+.decoracao{position:relative;display:flex;align-items:center;justify-content:center;height:88px;border:1px solid #785a2870;background:linear-gradient(145deg,#10253699,#010a1399);color:#c8aa6e80;box-shadow:inset 0 0 0 4px #010a13;font-size:30px;pointer-events:none;user-select:none}.decoracao span{display:grid;place-items:center;width:36px;height:36px;border:1px solid #0ac8b94d;transform:rotate(45deg);font-size:17px;color:#0ac8b980}.decoracao.esq{grid-column:1;grid-row:1}.decoracao.dir{grid-column:3;grid-row:1}#frente{grid-row:1}@media(max-width:350px){.decoracao{height:76px}}
+
+/* Grade 3x3 conforme a referencia: curvas na primeira linha. */
+#esquerda{grid-column:1;grid-row:1}#frente{grid-column:2;grid-row:1}#direita{grid-column:3;grid-row:1}
+.decoracao.esq{grid-column:1;grid-row:2}.decoracao.dir{grid-column:3;grid-row:2}#parar{grid-column:2;grid-row:2}
+#re_esquerda{grid-column:1;grid-row:3}#tras{grid-column:2;grid-row:3}#re_direita{grid-column:3;grid-row:3}
+.decoracao{overflow:hidden}.piltover{height:82px;width:62px;overflow:hidden;border:1px solid #f0e6d2;background:linear-gradient(#168e9f,#b7f4df);box-shadow:0 0 12px #0ac8b92b;padding-top:4px}.piltover b{display:block;color:#fff;font-size:8px;letter-spacing:1px}.piltover small{display:block;color:#e5fff8;font-size:3px;letter-spacing:.6px;margin-top:1px}.piltover svg{display:block;width:100%;height:64px}
+@media(max-width:350px){.piltover{height:70px;width:53px}.piltover svg{height:54px}}
+
+.decoracao{background:radial-gradient(ellipse,#164352,#071521 75%);border-color:#92723d;box-shadow:inset 0 0 0 3px #010a13,inset 0 0 16px #0ac8b91a}
+.piltover{height:82px;width:66px;padding:0;border:0;background:none;box-shadow:0 2px 9px #0009;transform:rotate(-2deg)}
+.decoracao.dir .piltover{transform:rotate(2deg)}
+.piltover svg{display:block;width:100%;height:100%}
+@media(max-width:350px){.piltover{height:70px;width:56px}.piltover svg{height:100%}}
+
+.dragon-panel{margin:20px 0;border:1px solid #92723d;background:#061521;padding:14px 10px}.dragon-panel h2{font:18px Georgia,serif;color:#c8aa6e;letter-spacing:2px;margin:0 0 8px}.arena{height:220px;position:relative;overflow:hidden;perspective:650px;background:radial-gradient(ellipse,#0b535a66,transparent 70%),repeating-linear-gradient(0deg,transparent 0 29px,#0ac8b910 30px),repeating-linear-gradient(90deg,transparent 0 29px,#0ac8b910 30px)}.arena:after{content:'';position:absolute;left:15%;right:15%;bottom:18px;height:40px;border:1px solid #c8aa6e66;border-radius:50%;box-shadow:0 0 15px #0ac8b933;pointer-events:none}#dragao{position:absolute;width:220px;height:180px;left:calc(50% - 110px);top:14px;transform-origin:50% 55%;filter:drop-shadow(0 0 7px #0ac8b96b);will-change:transform;z-index:1}.sem-imu #dragao{opacity:.25;filter:grayscale(1)}.imu-status{font-size:12px;color:#80e5d9;min-height:30px;margin:6px 0}.imu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:10px;color:#a09b8c}.imu-grid strong{display:block;font-size:13px;color:#f0e6d2;margin-top:5px;font-weight:normal}.imu-nota{font-size:10px;line-height:1.6;color:#a09b8c;margin-bottom:0}
+.arena{perspective:none}.arena:after{left:calc(50% - 88px);right:auto;bottom:22px;width:176px;height:176px;border-radius:50%;box-shadow:0 0 0 20px #0ac8b907,0 0 18px #0ac8b915}#dragao{transform-origin:50% 50%}
+</style>
+<main class="painel">
+<div class="marca">LEAGUE OF LEGENDS · FAN THEME</div>
+<div class="emblema" aria-hidden="true"><span>◆</span></div>
+<h1>HEXTECH</h1>
+<p class="subtitulo">Central de comando</p>
+<div class="linha"></div>
+<div class="info">
+<div><span class="rotulo">CONEXÃO</span><span class="valor" id="rede">Conectando…</span></div>
+<div><span class="rotulo">ENERGIA</span><strong id="bateria">—</strong></div>
+</div>
+<p class="dica"><strong>Segure para mover. Solte para parar.</strong><br>Linha superior: avance reto ou fazendo curva.<br>Linha inferior: recue reto ou fazendo curva.</p>
+<div class="velocidade"><label for="velocidade">VELOCIDADE · <output id="valorVelocidade">100</output>%</label><input id="velocidade" type="range" min="0" max="100" step="5" value="100"><div class="escala"><span>0% · sem tração</span><span>100% · máxima</span></div></div>
+<div class="setas">
+<div class="decoracao esq" aria-hidden="true"><div class="piltover"><svg viewBox="0 0 120 150" aria-hidden="true">
+<defs><linearGradient id="skyesq" x2="0" y2="1"><stop stop-color="#087d92"/><stop offset=".6" stop-color="#9de2d1"/><stop offset="1" stop-color="#f1db9d"/></linearGradient><linearGradient id="cityesq" x2="0" y2="1"><stop stop-color="#376f78"/><stop offset="1" stop-color="#071f33"/></linearGradient></defs>
+<rect width="120" height="150" fill="#071c2c"/><rect x="4" y="4" width="112" height="142" fill="url(#skyesq)"/>
+<circle cx="77" cy="53" r="26" fill="#e4ffe8" opacity=".65"/>
+<path d="M6 67Q39 30 80 43T115 27M5 75Q47 50 89 58T115 49" fill="none" stroke="#e0fff1" stroke-width="2" opacity=".65"/>
+<path d="M10 56L22 50L38 53L27 58Z" fill="#416b6d"/><path d="M18 58H28L25 61H21Z" fill="#b5bba0"/>
+<path d="M4 148V96H13V76H19V96H29V148M29 148V82H36V65H40V82H49V148M48 148V74H55V48L61 36L67 48V74H74V148M73 148V92H80V71H86V92H94V148M93 148V83H101V60H107V83H116V148" fill="url(#cityesq)"/>
+<path d="M53 49H69M53 74H70M36 84H46M97 84H112" stroke="#d5b775" stroke-width="2"/>
+<path d="M58 49H64V71H58Z" fill="#9ef7e2"/><path d="M60 39V32" stroke="#eccb87"/>
+<path d="M4 107Q60 71 116 99V106Q60 80 4 116Z" fill="#d1b57a"/><path d="M4 112Q60 78 116 104" fill="none" stroke="#524c43" stroke-width="2"/>
+<path d="M18 107V148M39 96V148M82 94V148M104 101V148" stroke="#b79862" stroke-width="3"/>
+<path d="M4 149V125L18 117L31 125V149M33 149V117L48 109L61 117V149M65 149V128L82 116L97 128V149M97 149V119L109 111L116 119V149" fill="#102d3a"/>
+<path d="M11 129H15V137H11ZM21 129H25V137H21ZM40 122H44V132H40ZM51 122H55V132H51ZM74 131H78V140H74ZM85 131H89V140H85ZM104 124H109V134H104Z" fill="#ffd08b"/>
+<path d="M7 140Q60 119 113 141" fill="none" stroke="#28b8b2" opacity=".6"/>
+<rect x="5" y="5" width="110" height="140" fill="none" stroke="#e8d4a4"/><path d="M9 26H111M12 29H108" stroke="#e8d4a4" stroke-width=".6"/>
+<text x="60" y="18" text-anchor="middle" fill="#fff6d9" font-family="Georgia,serif" font-size="12" letter-spacing="1.7">PILTOVER</text>
+<text x="60" y="24" text-anchor="middle" fill="#fff6d9" font-family="Arial,sans-serif" font-size="3.4" letter-spacing="1">A CIDADE DO PROGRESSO</text>
+</svg></div></div>
+<div class="decoracao dir" aria-hidden="true"><div class="piltover"><svg viewBox="0 0 120 150" aria-hidden="true">
+<defs><linearGradient id="skydir" x2="0" y2="1"><stop stop-color="#087d92"/><stop offset=".6" stop-color="#9de2d1"/><stop offset="1" stop-color="#f1db9d"/></linearGradient><linearGradient id="citydir" x2="0" y2="1"><stop stop-color="#376f78"/><stop offset="1" stop-color="#071f33"/></linearGradient></defs>
+<rect width="120" height="150" fill="#071c2c"/><rect x="4" y="4" width="112" height="142" fill="url(#skydir)"/>
+<circle cx="77" cy="53" r="26" fill="#e4ffe8" opacity=".65"/>
+<path d="M6 67Q39 30 80 43T115 27M5 75Q47 50 89 58T115 49" fill="none" stroke="#e0fff1" stroke-width="2" opacity=".65"/>
+<path d="M10 56L22 50L38 53L27 58Z" fill="#416b6d"/><path d="M18 58H28L25 61H21Z" fill="#b5bba0"/>
+<path d="M4 148V96H13V76H19V96H29V148M29 148V82H36V65H40V82H49V148M48 148V74H55V48L61 36L67 48V74H74V148M73 148V92H80V71H86V92H94V148M93 148V83H101V60H107V83H116V148" fill="url(#citydir)"/>
+<path d="M53 49H69M53 74H70M36 84H46M97 84H112" stroke="#d5b775" stroke-width="2"/>
+<path d="M58 49H64V71H58Z" fill="#9ef7e2"/><path d="M60 39V32" stroke="#eccb87"/>
+<path d="M4 107Q60 71 116 99V106Q60 80 4 116Z" fill="#d1b57a"/><path d="M4 112Q60 78 116 104" fill="none" stroke="#524c43" stroke-width="2"/>
+<path d="M18 107V148M39 96V148M82 94V148M104 101V148" stroke="#b79862" stroke-width="3"/>
+<path d="M4 149V125L18 117L31 125V149M33 149V117L48 109L61 117V149M65 149V128L82 116L97 128V149M97 149V119L109 111L116 119V149" fill="#102d3a"/>
+<path d="M11 129H15V137H11ZM21 129H25V137H21ZM40 122H44V132H40ZM51 122H55V132H51ZM74 131H78V140H74ZM85 131H89V140H85ZM104 124H109V134H104Z" fill="#ffd08b"/>
+<path d="M7 140Q60 119 113 141" fill="none" stroke="#28b8b2" opacity=".6"/>
+<rect x="5" y="5" width="110" height="140" fill="none" stroke="#e8d4a4"/><path d="M9 26H111M12 29H108" stroke="#e8d4a4" stroke-width=".6"/>
+<text x="60" y="18" text-anchor="middle" fill="#fff6d9" font-family="Georgia,serif" font-size="12" letter-spacing="1.7">PILTOVER</text>
+<text x="60" y="24" text-anchor="middle" fill="#fff6d9" font-family="Arial,sans-serif" font-size="3.4" letter-spacing="1">A CIDADE DO PROGRESSO</text>
+</svg></div></div>
+<button id="frente" aria-label="Frente"><span class="icone">↑</span><span class="nome">AVANÇAR</span></button>
+<button id="esquerda" aria-label="Avançar para esquerda"><span class="icone">↖</span><span class="nome">ESQUERDA</span></button>
+<button id="parar" aria-label="Parar"><span class="icone">■</span><span class="nome">PARAR</span></button>
+<button id="direita" aria-label="Avançar para direita"><span class="icone">↗</span><span class="nome">DIREITA</span></button>
+<button id="re_esquerda" aria-label="Ré com direção à esquerda"><span class="icone">↙</span><span class="nome">RÉ ESQUERDA</span></button>
+<button id="tras" aria-label="Ré"><span class="icone">↓</span><span class="nome">RECUAR</span></button>
+<button id="re_direita" aria-label="Ré com direção à direita"><span class="icone">↘</span><span class="nome">RÉ DIREITA</span></button>
+</div>
+<section class="dragon-panel sem-imu" id="painelIMU">
+<h2>DRAGÃO HEXTECH</h2><span class="rotulo">VISTA DE CIMA · MPU-6050</span>
+<div class="arena"><svg id="dragao" viewBox="0 0 260 210" role="img" aria-label="Dragão Hextech que reage ao sensor">
+<defs><linearGradient id="metal" x2="1" y2="1"><stop stop-color="#9cbaa9"/><stop offset=".4" stop-color="#315866"/><stop offset="1" stop-color="#102936"/></linearGradient><linearGradient id="asa" x2="0" y2="1"><stop stop-color="#25c8cd"/><stop offset="1" stop-color="#07506c"/></linearGradient></defs>
+<g stroke="#c8aa6e" stroke-width="2" stroke-linejoin="round">
+<path d="M117 91L58 22L15 38L38 74L10 106L53 99L78 131L119 119Z" fill="url(#asa)"/><path d="M143 91L202 22L245 38L222 74L250 106L207 99L182 131L141 119Z" fill="url(#asa)"/>
+<path d="M117 100L58 22L53 99M58 22L38 74L117 100M143 100L202 22L207 99M202 22L222 74L143 100" fill="none" stroke="#e3c995"/>
+<path d="M120 140Q101 178 143 184Q162 190 147 204L177 192L167 177Q129 185 142 141Z" fill="url(#metal)"/>
+<path d="M114 106L88 130L79 159L99 150L105 130L123 127M146 106L172 130L181 159L161 150L155 130L137 127" fill="url(#metal)"/>
+<path d="M130 66L110 92L112 130L130 157L148 130L150 92Z" fill="url(#metal)"/>
+<path d="M113 80L106 47L116 60L122 35L130 53L138 35L144 60L154 47L147 80L137 94H123Z" fill="url(#metal)"/>
+<path d="M118 70L126 75L120 78ZM142 70L134 75L140 78Z" fill="#7cfff2" stroke="#0ac8b9"/>
+<path d="M124 88L130 93L136 88M119 120L130 127L141 120M120 135L130 142L140 135" fill="none"/>
+<path d="M130 96L119 109L130 122L141 109Z" fill="#27e5db" stroke="#f4deac"/>
+<path d="M130 101L125 109L130 116L135 109Z" fill="#d4fff1" stroke="none"/>
+</g></svg></div>
+<p class="imu-status" id="imuStatus" aria-live="polite">Aguardando sensor…</p>
+<div class="imu-grid"><div>ACEL. FRENTE/TRÁS<strong id="ax">—</strong></div><div>ACEL. ESQ./DIR.<strong id="ay">—</strong></div><div>GIRO RELATIVO<strong id="yaw">—</strong></div></div>
+<p class="imu-nota">Vista de cima: a cabeça aponta para a frente. Responde à aceleração no chão e ao giro nas curvas; não mede posição ou distância. Deixe parado ao ligar para calibrar.</p>
+</section>
+<div class="rodape"><span class="selo">POTÊNCIA AJUSTÁVEL · 0–100%</span><br>Parada automática ao perder os comandos.</div>
+<p class="credito">VISUAL INSPIRADO EM RUNETERRA · NÃO OFICIAL</p>
+</main>
+<script>
+// MQTT 3.1.1 sobre WebSocket, QoS0, sem bibliotecas externas.
+const configuracao = "__CARRO_CONFIG__";
+const config = typeof configuracao === 'object' ? configuracao : {
+ mqtt: true, url: 'wss://broker.hivemq.com:8884/mqtt', base: 'eld050/carrinho01'
+};
+const transporte = (()=>{
+ const encoder=new TextEncoder(), decoder=new TextDecoder();
+ let ws=null, pronto=false, dados=null, recebido=0, rx=new Uint8Array(0);
+ let resposta=0, ping=0, inicio=0, reconectar=0, mensagem='Conectando ao HiveMQ…';
+ let tokenAnterior=null;
+ const juntar=(...partes)=>{
+  const bytes=new Uint8Array(partes.reduce((n,p)=>n+p.length,0));
+  let pos=0;for(const p of partes){bytes.set(p,pos);pos+=p.length;}return bytes;
+ };
+ function texto(s){const b=encoder.encode(s);return juntar([b.length>>8,b.length&255],b);}
+ function pacote(tipo,body=new Uint8Array(0)){
+  let n=body.length;const cab=[tipo];
+  do {let b=n%128;n=Math.floor(n/128);cab.push(b|(n?128:0));}while(n);
+  return juntar(cab,body);
+ }
+ function escrever(tipo,body){
+  if(!ws||ws.readyState!==WebSocket.OPEN||ws.bufferedAmount>4096)throw Error('MQTT indisponível');
+  ws.send(pacote(tipo,body));
+ }
+ function perdido(textoErro){
+  pronto=false;dados=null;recebido=0;mensagem=textoErro;
+  // Nunca continuar a última seta automaticamente após reconectar.
+  comando='parar';ativo=null;ponteiro=null;visual();
+  semSensor('Sem telemetria MQTT');
+ }
+ function tratar(tipo,body){
+  resposta=performance.now();
+  if(tipo===0x20){
+   if(body.length!==2||body[1]!==0)throw Error('Conexão recusada pelo broker');
+   escrever(0x82,juntar([0,1],texto(config.base+'/estado'),[0]));
+   mensagem='Aguardando telemetria da ESP…';
+  }else if(tipo===0x90){
+   if(body.length!==3||body[0]!==0||body[1]!==1||body[2]!==0)throw Error('Inscrição MQTT recusada');
+   pronto=true;ping=performance.now();
+  }else if((tipo>>4)===3&&pronto){
+   if((tipo&7)!==0||body.length<2)return; // ignorar retain/QoS1/QoS2
+   const n=body[0]*256+body[1];if(n+2>body.length)throw Error('Pacote truncado');
+   if(decoder.decode(body.slice(2,2+n))!==config.base+'/estado')return;
+   let d;try{d=JSON.parse(decoder.decode(body.slice(2+n)));}catch(e){return;}
+   if(!d||!Number.isFinite(d.bateria)||!Number.isInteger(d.stamp)||typeof d.token!=='string')return;
+   const novaSessao=d.token!==tokenAnterior;
+   tokenAnterior=d.token;dados=d;recebido=performance.now();mensagem='Conectado · MQTT';
+   if(novaSessao){sequenciaIMU=-1;parar();}
+  }
+ }
+ function receber(bytes){
+  rx=juntar(rx,bytes);
+  if(rx.length>65536)throw Error('Pacote MQTT muito grande');
+  while(rx.length>=2){
+   let n=0,m=1,pos=1;
+   while(true){
+    if(pos>=rx.length)return;
+    const b=rx[pos++];n+=(b&127)*m;
+    if(!(b&128))break;
+    m*=128;if(pos>4)throw Error('Comprimento MQTT inválido');
+   }
+   if(n>32768)throw Error('Mensagem muito grande');
+   if(rx.length<pos+n)return;
+   const tipo=rx[0],body=rx.slice(pos,pos+n);rx=rx.slice(pos+n);tratar(tipo,body);
+  }
+ }
+ function conectar(){
+  clearTimeout(reconectar);pronto=false;rx=new Uint8Array(0);dados=null;
+  inicio=resposta=performance.now();mensagem='Conectando ao HiveMQ…';
+  try{ws=new WebSocket(config.url,['mqtt']);}catch(e){perdido('Endereço WebSocket inválido');reconectar=setTimeout(conectar,3000);return;}
+  ws.binaryType='arraybuffer';
+  ws.onopen=()=>{
+   const id='hextech-web-'+Math.random().toString(16).slice(2);
+   try{escrever(0x10,juntar(texto('MQTT'),[4,2,0,10],texto(id)));}catch(e){ws.close();}
+  };
+  ws.onmessage=e=>{
+   try{receber(new Uint8Array(e.data));}catch(err){perdido(err.message);ws.close();}
+  };
+  ws.onerror=()=>{mensagem='Falha no WebSocket; verifique a internet';};
+  ws.onclose=()=>{perdido('MQTT desconectado — reconectando…');reconectar=setTimeout(conectar,3000);};
+ }
+ function status(){
+  if(!pronto||!dados||performance.now()-recebido>900)throw Error(mensagem==='Conectado · MQTT'?'ESP sem telemetria recente':mensagem);
+  return dados;
+ }
+ function enviar(acao,vel){
+  const d=status();
+  if(performance.now()-recebido>600)throw Error('Aguardando dados recentes');
+  if(!['frente','tras','esquerda','direita','re_esquerda','re_direita','parar'].includes(acao)||!Number.isInteger(vel)||vel<0||vel>100)throw Error('Comando inválido');
+  if(acao!=='parar'&&d.imu&&String(d.imu.status).startsWith('Calibrando'))throw Error('Aguarde a calibração');
+  const payload=JSON.stringify({comando:acao,velocidade:vel,token:d.token,stamp:d.stamp});
+  escrever(0x30,juntar(texto(config.base+'/comando'),encoder.encode(payload)));
+ }
+ function iniciar(){
+  if(!config.mqtt)return;
+  conectar();
+  setInterval(()=>{
+   const agora=performance.now();
+   if(ws&&ws.readyState===WebSocket.OPEN){
+    if((!pronto&&agora-inicio>8000)||agora-resposta>15000){ws.close();return;}
+    if(pronto&&agora-ping>4000){try{escrever(0xC0);ping=agora;}catch(e){ws.close();}}
+   }else if(ws&&ws.readyState===WebSocket.CONNECTING&&agora-inicio>10000){ws.close();}
+  },500);
+ }
+ return {iniciar,status,enviar};
+})();
+async function pedidoCarro(url,opcoes){
+ if(!config.mqtt)return fetch(url,opcoes);
+ if(url==='/status')return {ok:true,json:async()=>transporte.status()};
+ const m=/^\/cmd\/(\w+)\?vel=(\d+)$/.exec(url);
+ if(!m)throw Error('Pedido inválido');
+ transporte.enviar(m[1],Number(m[2]));
+ return {ok:true};
+}
+
+
+let comando='parar', ocupado=false, ativo=null, ponteiro=null;
+const rede=document.getElementById('rede');
+const velocidade=document.getElementById('velocidade');
+let ajustePendente=null;
+velocidade.addEventListener('input',()=>{
+ document.getElementById('valorVelocidade').textContent=velocidade.value;
+ clearTimeout(ajustePendente);ajustePendente=setTimeout(enviar,100);
+});
+velocidade.addEventListener('change',()=>{clearTimeout(ajustePendente);enviar();});
+function visual(){document.querySelectorAll('button').forEach(b=>b.classList.toggle('ativo',b.id===comando&&comando!=='parar'));}
+function parar(){comando='parar';ativo=null;ponteiro=null;visual();enviar();}
+async function enviar(){
+ if(ocupado)return;
+ ocupado=true;
+ const enviado=comando;
+ const potenciaEnviada=velocidade.value;
+ const abortar=new AbortController();
+ const limite=setTimeout(()=>abortar.abort(),400);
+ try{
+  const resposta=await pedidoCarro('/cmd/'+enviado+'?vel='+potenciaEnviada,{method:'POST',cache:'no-store',signal:abortar.signal});
+  if(!resposta.ok)throw Error();
+ }catch(e){comando='parar';ativo=null;ponteiro=null;visual();rede.textContent='Sem comunicação — parado';}
+ finally{clearTimeout(limite);ocupado=false;if(comando!==enviado||velocidade.value!==potenciaEnviada)enviar();}
+}
+document.querySelectorAll('.setas button').forEach(botao=>{
+ botao.addEventListener('contextmenu',e=>e.preventDefault());
+ botao.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  if(botao.id==='parar'){parar();return;}
+  if(ponteiro!==null)return;
+  ponteiro=e.pointerId;ativo=botao;comando=botao.id;
+  botao.setPointerCapture(e.pointerId);visual();enviar();
+ });
+ botao.addEventListener('lostpointercapture',()=>{if(ativo===botao)parar();});
+});
+window.addEventListener('pointerup',e=>{if(e.pointerId===ponteiro)parar();});
+window.addEventListener('pointercancel',parar);
+window.addEventListener('blur',parar);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)parar();});
+window.addEventListener('pagehide',()=>{comando='parar';if(config.mqtt){try{transporte.enviar('parar',Number(velocidade.value));}catch(e){}}else{navigator.sendBeacon('/cmd/parar?vel='+velocidade.value,'');}});
+setInterval(()=>{if(comando!=='parar')enviar();},180);
+
+const painelIMU=document.getElementById('painelIMU'), dragao=document.getElementById('dragao');
+let alvo=[0,0,0,0,0,0], atual=[0,0,0,0,0,0], ultimaIMU=0, sequenciaIMU=-1;
+function semSensor(texto){
+ painelIMU.classList.add('sem-imu');document.getElementById('imuStatus').textContent=texto;
+ alvo=[0,0,0,0,0,0];
+ ['ax','ay','yaw'].forEach(id=>document.getElementById(id).textContent='—');
+}
+function mostrarIMU(d){
+ if(!d||!d.ok){semSensor(d?d.status:'Sensor não disponível');return;}
+ if(d.seq===sequenciaIMU)return;
+ sequenciaIMU=d.seq;ultimaIMU=performance.now();painelIMU.classList.remove('sem-imu');
+ const clamp=(v,l)=>Math.max(-l,Math.min(l,v));
+ // Deslocamento visual limitado e proporcional à aceleração; não é odometria.
+ // Converte aceleração do corpo para o plano da tela usando o giro medido.
+ const rumo=d.ang[2]*Math.PI/180;
+ const frente=d.acc[0]*Math.cos(rumo)-d.acc[1]*Math.sin(rumo);
+ const esquerda=d.acc[0]*Math.sin(rumo)+d.acc[1]*Math.cos(rumo);
+ alvo=[clamp(-esquerda*95,45),clamp(-frente*95,40),0,0,0,-d.ang[2]];
+ ['ax','ay'].forEach((id,i)=>document.getElementById(id).textContent=d.acc[i].toFixed(2)+' g');
+ document.getElementById('yaw').textContent=d.ang[2].toFixed(1)+'°';
+ const nomes=[['frente','trás'],['esquerda','direita']];
+ const sinais=[];
+ d.acc.slice(0,2).forEach((v,i)=>{if(Math.abs(v)>.06)sinais.push(nomes[i][v>0?0:1]);});
+ const giro=Math.abs(d.giro[2]);
+ document.getElementById('imuStatus').textContent=sinais.length?'Aceleração: '+sinais.join(' · '):giro>3?'Rotação detectada':'Sem variação significativa';
+}
+let frameAnterior=performance.now();
+function animar(agora){
+ const dt=Math.min((agora-frameAnterior)/1000,.1);frameAnterior=agora;
+ if(ultimaIMU&&agora-ultimaIMU>1200){semSensor('Leitura interrompida');ultimaIMU=0;}
+ const f=1-Math.exp(-12*dt);
+ atual=atual.map((v,i)=>v+(i===5?((alvo[i]-v+540)%360-180):alvo[i]-v)*f);
+ dragao.style.transform=`translate(${atual[0]}px,${atual[1]}px) rotate(${atual[5]}deg)`;
+ requestAnimationFrame(animar);
+}
+requestAnimationFrame(animar);
+
+async function atualizar(){
+ const abortar=new AbortController();const limite=setTimeout(()=>abortar.abort(),800);
+ try{
+  const resposta=await pedidoCarro('/status',{cache:'no-store',signal:abortar.signal});
+  if(!resposta.ok)throw Error();
+  const dados=await resposta.json();
+  document.getElementById('bateria').textContent=dados.bateria.toFixed(2)+' V';
+  rede.textContent=config.mqtt?'Conectado · MQTT':'Conectado · Wi-Fi';
+  mostrarIMU(dados.imu);
+ }catch(e){rede.textContent=e.message||'Sem comunicação';semSensor('Aguardando dados da ESP');parar();}
+ finally{clearTimeout(limite);setTimeout(atualizar,150);}
+}
+transporte.iniciar();parar();atualizar();
+</script>
+</html>
